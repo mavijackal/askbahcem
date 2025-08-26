@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aşkbahçem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1a4f1;
+            margin: 0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        .container-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .main-title-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 3rem;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+        }
+        .main-title-area img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .heart-card {
+            margin-bottom: 3rem;
+            cursor: pointer;
+            transition: transform 0.5s ease, opacity 0.5s ease, height 0.5s ease, margin-bottom 0.5s ease;
+            width: fit-content;
+            max-width: 300px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transform-origin: center;
+        }
+        .heart-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            filter: brightness(1.05);
+        }
+        .heart-visual {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            overflow: hidden;
+            mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+        }
+
+        .heart-visual .heart-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0;
+            object-position: center;
+        }
+        .heart-note {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            transition: opacity 0.3s ease;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            width: 80%;
+            line-height: 1.2;
+            z-index: 10;
+        }
+
+        .heart-card.revealed {
+            opacity: 0;
+            transform: scale(0);
+            height: 0;
+            margin-bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .content-display-item {
+            background-color: #fff;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .content-display-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (min-width: 768px) {
+            .content-display-item {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+            .content-display-item.reversed {
+                flex-direction: row-reverse;
+            }
+            .content-display-item .image-container {
+                width: 50%;
+            }
+            .content-display-item .text-container {
+                width: 45%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .content-display-item .image-container {
+                margin-right: 2rem;
+            }
+            .content-display-item.reversed .image-container {
+                margin-left: 2rem;
+                margin-right: 0;
+            }
+        }
+
+        .content-display-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            object-fit: cover;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .content-display-item .text-content {
+            font-size: 1.9rem;
+            line-height: 1.8;
+            color: #555;
+            text-align: center;
+            margin-top: 1.5rem;
+            text-indent: 4em;
+        }
+        @media (min-width: 768px) {
+            .content-display-item .text-content {
+                text-align: left;
+                margin-top: 0;
+            }
+        }
+
+        #music-controls {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        #music-controls button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 9999px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            color: #4B5563;
+        }
+        #music-controls button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+        #music-controls button:active {
+            transform: translateY(0);
+        }
+        #music-controls button svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            fill: currentColor;
+        }
+        #play-pause-button.playing svg {
+            fill: #EF4444;
+        }
+        #play-pause-button.paused svg {
+            fill: #4B5563;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <audio id="background-music" preload="auto">
+        <source src="audio/10.mp3" type="audio/mpeg">
+        <source src="audio/2.mp3" type="audio/mpeg">
+        <source src="audio/3.mp3" type="audio/mpeg">
+        <source src="audio/4.mp3" type="audio/mpeg">
+        <source src="audio/5.mp3" type="audio/mpeg">
+        <source src="audio/7.mp3" type="audio/mpeg">
+        <source src="audio/8.mp3" type="audio/mpeg">
+        <source src="audio/9.mp3" type="audio/mpeg">
+        <source src="audio/1.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="music-controls">
+        <button id="play-pause-button">
+            <svg class="play-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
+            </svg>
+            <svg class="pause-icon hidden" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="currentColor"/>
+            </svg>
+        </button>
+        <button id="next-song-button">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 18L14.5 12L6 6V18ZM16 6V18H18V6H16Z" fill="currentColor"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="container-wrapper">
+        <div class="main-title-area">
+            <img src="img/hatunum.jpg" alt="Ana Başlık Görseli">
+            <h1 class="text-4xl md:text-5xl font-bold text-center italic mt-4 leading-tight" style="color: #ff0000;">
+                SENİ SEVİYORUM YAVRUM
+            </h1>
+        </div>
+
+        <div id="hearts-container" class="flex flex-col items-center w-full">
+            <div class="heart-card" data-index="0">
+                <div class="heart-visual">
+                    <img alt="Anı 1 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+
+            <div class="heart-card" data-index="1">
+                <div class="heart-visual">
+                    <img alt="Anı 2 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+
+            <div class="heart-card" data-index="2">
+                <div class="heart-visual">
+                    <img alt="Anı 3 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+            
+            <div class="heart-card" data-index="3">
+                <div class="heart-visual">
+                    <img alt="Anı 4 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+
+            <div class="heart-card" data-index="4">
+                <div class="heart-visual">
+                    <img alt="Anı 5 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+
+            <div class="heart-card" data-index="5">
+                <div class="heart-visual">
+                    <img alt="Anı 6 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+
+            <div class="heart-card" data-index="6">
+                <div class="heart-visual">
+                    <img alt="Anı 7 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+
+            <div class="heart-card" data-index="7">
+                <div class="heart-visual">
+                    <img alt="Anı 8 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+
+            <div class="heart-card" data-index="8">
+                <div class="heart-visual">
+                    <img alt="Anı 9 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+
+            <div class="heart-card" data-index="9">
+                <div class="heart-visual">
+                    <img alt="Anı 10 Kalp Görseli" class="heart-img">
+                </div>
+                <span class="heart-note"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const memories = [
+            {
+                heartImage: "img/kalbim.jpg",
+                image: "img/sahibim.jpg",
+                text: `<br> <br> <br> <br> <br> Siyahın en güzel tonuyduk o gün. Bilirsin, normalde zıt renklerizdir yavrum; sen benim meleğim, ben senin şeytanın..`
+            },
+            {
+                heartImage: "img/kalp2.jpg",
+                image: "img/çiçeğim.jpg",
+                text: `<br> <br> Nefisem, benim minik yavrum… Zaman çok hızlı geçiyor; büyüyoruz, değişiyoruz ve gelişiyoruz^^`
+            },
+            {
+                heartImage: "img/kalp3.jpg",
+                image: "img/aşktanem.jpg",
+                text: `<br> <br> Bakışına, gülüşüne, ‘eşek’ diye seslenişine tutuldum. Her zerrene aşığım; seviyorum seni, eşek`
+            },
+            {
+                heartImage: "img/kalp4.jpg",
+                image: "img/birtanem.jpg",
+                text: `<br> <br> Yağmurda ıslandık, güneşte kavrulduk,bazen Ankaray, bazen tabanvay… Seninle geçtiğim her milim,gönlümde yer edinir desilyon.`
+            },
+            {
+                heartImage: "img/kalp5.jpg",
+                image: "img/öğretmenim.jpg",
+                text: `<br> <br> <br> <br> Benim biricik öğretmenim, ilk günden beri beni kölen ediyorsun. Öğrencin ve kölen olmaktan her zaman onur ve gurur duyuyorum; hastanım, edebiyatçım.`
+            },
+            {
+                heartImage: "img/kalp6.jpg",
+                image: "img/sırdaşım.jpg",
+                text: `<br> <br> <br> Kışın açan güneşim, yazın klimam… Her ne mevsim olursa olsun taze etim, seni ısırmalara hiç doyamayacağım.<br> <br>Vitaminim sensin; hastalık beni nasıl yensin?`
+            },
+            {
+                heartImage: "img/kalp7.jpg",
+                image: "img/sevgilim.jpg",
+                text: `<br> <br> Ben Ankarayı seviyorum, ama seninle… Sen başka yerde olsaydın, orayı da severdim. Benim sevdiğim ilim de sensin; seveceğim ilimde senle.`
+            },
+            {
+                heartImage: "img/kalp8.jpg",
+                image: "img/yavrum.jpg",
+                text: `<br> <br> <br> Her gece kalbimiz yandı, bazen acıdandı. Seninle yaşadığım iki geceyi de değişmem bir #'e.`
+            },
+            {
+                heartImage: "img/kalp9.jpg",
+                image: "img/hocam.jpg",
+                text: `<br> <br> <br> Oturduk, kalktık, mezun olduk, sınıfta kaldık, üzüldük, sevindik, savaştık… Bazen pes ettik ama vazgeçmedik. Her şey rayına girer, biz balayına giderrrr!<br>Bazen hüzünle, bazen cesaretle;
+Bu gönül sana, her daim hasretle.Seviyorum seni hem de bitmeyen çoklukla.`
+            },
+            {
+                heartImage: "img/kalp10.jpg",
+                image: "img/aşkım.jpg",
+                text: `Birlikte geçirdiğimiz, iyisiyle kötüsüyle her an için sana teşekkür ederim. Yıl dönümümüz kutlu olsun birtanem. Seninle geçen her gün, hayatımın en güzel günü. Daha nice yıllara, Allah ömür verdikçe. ‘Seni seviyorum’ demek yetmiyor; seni içime sokasım var. Edebiyatçım, bugünüm, yarınım… Seni çok seviyorum♥♥♥.`
+            }
+        ];
+
+        const playlist = [
+            "audio/10.mp3",
+            "audio/4.mp3",
+            "audio/5.mp3",
+            "audio/6.mp3",
+            "audio/7.mp3"
+            
+            
+            
+        ];
+        let currentSongIndex = 0;
+        const musicPlayer = document.getElementById('background-music');
+        const playPauseButton = document.getElementById('play-pause-button');
+        const nextSongButton = document.getElementById('next-song-button');
+        const playIcon = playPauseButton.querySelector('.play-icon');
+        const pauseIcon = playPauseButton.querySelector('.pause-icon');
+        let isMusicPlaying = false;
+        let hasUserInteracted = false;
+
+        function updatePlayPauseIcons() {
+            if (isMusicPlaying) {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+                playPauseButton.classList.add('playing');
+                playPauseButton.classList.remove('paused');
+            } else {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                playPauseButton.classList.remove('playing');
+                playPauseButton.classList.add('paused');
+            }
+        }
+
+        musicPlayer.addEventListener('canplaythrough', () => {
+            if (isMusicPlaying && (musicPlayer.paused || musicPlayer.ended || musicPlayer.currentTime === 0)) {
+                 musicPlayer.play().catch(e => console.log("Müzik çalma hatası (canplaythrough):", e));
+            }
+        });
+
+        musicPlayer.addEventListener('ended', () => {
+            playNextSong();
+            if (isMusicPlaying) {
+                musicPlayer.play().catch(e => console.log("Müzik çalma hatası (sonraki şarkı):", e));
+            }
+        });
+
+        function playNextSong() {
+            if (playlist.length === 0) {
+                console.warn("Şarkı listesi boş!");
+                return;
+            }
+
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            
+            while (musicPlayer.firstChild) {
+                musicPlayer.removeChild(musicPlayer.firstChild);
+            }
+
+            const source = document.createElement('source');
+            source.src = playlist[currentSongIndex];
+            source.type = "audio/mpeg";
+            musicPlayer.appendChild(source);
+
+            musicPlayer.load();
+            
+            updatePlayPauseIcons();
+        }
+
+        playPauseButton.addEventListener('click', () => {
+            hasUserInteracted = true;
+
+            if (isMusicPlaying) {
+                musicPlayer.pause();
+                isMusicPlaying = false;
+            } else {
+                isMusicPlaying = true;
+
+                if (musicPlayer.currentSrc && musicPlayer.paused) {
+                    musicPlayer.play().catch(e => console.log("Müzik çalma hatası (manuel devam et):", e));
+                } else {
+                    playNextSong();
+                }
+            }
+            updatePlayPauseIcons();
+        });
+
+        nextSongButton.addEventListener('click', () => {
+            hasUserInteracted = true;
+            isMusicPlaying = true;
+            playNextSong();
+            updatePlayPauseIcons();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const heartCards = document.querySelectorAll('.heart-card');
+
+            updatePlayPauseIcons();
+
+            heartCards.forEach(card => {
+                const index = parseInt(card.dataset.index);
+                const heartVisualElement = card.querySelector('.heart-visual');
+                const heartImgElement = card.querySelector('.heart-img');
+
+                if (memories[index] && memories[index].heartImage) {
+                    heartImgElement.src = memories[index].heartImage;
+                } else {
+                    heartImgElement.src = `https://placehold.co/150x150/FFEBEE/EF4444?text=Kalp+${index+1}`;
+                }
+
+                heartVisualElement.classList.remove('red-heart', 'black-heart');
+
+                card.addEventListener('click', () => {
+                    if (!hasUserInteracted && !isMusicPlaying) {
+                        isMusicPlaying = true;
+                        playNextSong();
+                        hasUserInteracted = true;
+                    }
+
+                    if (card.classList.contains('revealed')) {
+                        return;
+                    }
+
+                    const memory = memories[index];
+
+                    const newContentDisplay = document.createElement('div');
+                    newContentDisplay.classList.add('content-display-item');
+
+                    if (index % 2 !== 0) {
+                        newContentDisplay.classList.add('reversed');
+                    }
+
+                    newContentDisplay.innerHTML = `
+                        <div class="image-container">
+                            <img src="${memory.image}" alt="Anı Fotoğrafı">
+                        </div>
+                        <div class="text-container">
+                            <div class="text-content">${memory.text}</div>
+                        </div>
+                    `;
+
+                    card.insertAdjacentElement('afterend', newContentDisplay);
+
+                    setTimeout(() => {
+                        newContentDisplay.classList.add('active');
+                        card.classList.add('revealed'); 
+                        newContentDisplay.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 50);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
